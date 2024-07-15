@@ -1,0 +1,88 @@
+.restaurant-list {
+  padding: 20px;
+  margin-top: 30px;
+  font-family: Arial, sans-serif;
+  margin-bottom: 20px;
+}
+
+.restaurant-list h1 {
+  margin-bottom: 0px;
+  text-align: center;
+  font-size: 34px;
+  color: #333;
+}
+
+.search-bars-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
+.search-bars {
+  position: absolute;
+  top: 54px;
+  right: 35px;
+  margin-right: 2px;
+  margin-top: 39px;
+}
+
+.search-bars input[type="text"] {
+  margin-top: 0px;
+  padding: 10px 16px;
+  border: 1px solid #3acbef;
+  border-radius: 20px;
+  font-size: 14px;
+  width: 150px;
+  transition: width 0.3s ease-in-out;
+}
+
+.search-bars input[type="text"]:focus {
+  width: 170px;
+  outline: none;
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0px;
+}
+
+table th,
+table td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+table th {
+  background-color: #f4f4f4;
+  font-size: 16px;
+}
+
+table tr:hover {
+  background-color: #f1f1f1;
+}
+
+@media (max-width: 768px) {
+  table th,
+  table td {
+    font-size: 14px;
+    padding: 10px;
+  }
+  
+  .search-bar input[type="text"] {
+    width: 100px;
+  }
+}
+
+.delete-button{
+  background-color: rgb(237, 63, 63);
+  color: white;
+  border-radius: 20px;
+  padding: 6px;
+  border-color:rgb(246, 40, 40);
+}

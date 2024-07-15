@@ -1,0 +1,118 @@
+/* Register.css */
+
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap");
+
+body,
+html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: "Roboto", sans-serif;
+  background-color: #f0f2f5;
+}
+
+.reg {
+  flex-direction: column;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.formarea {
+  background: linear-gradient(135deg, #cb1111 0%, #fc2525 100%);
+  padding: 20px;
+  margin-top: 10vh;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  width: 100%;
+  max-width: 400px;
+  color: #fff;
+}
+
+.formarea h1 {
+  margin-bottom: 20px;
+  font-size: 2.5rem;
+}
+
+.inputarea {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.labels {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.inputs {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  color: #333;
+}
+
+.inputs:focus {
+  outline: none;
+  border: 2px solid #fff;
+}
+
+.btnarea {
+  margin-top: 20px;
+}
+
+.bttn {
+  background-color: #fff;
+  color: #cb1111;
+  padding: 15px 30px;
+  border: none;
+  border-radius: 25px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+  width: 100%;
+}
+
+.bttn:hover {
+  background-color: #fc2525;
+  color: #fff;
+}
+
+.btnarea p {
+  margin-top: 10px;
+  color: #fff;
+}
+
+.btnarea p a {
+  color: #ffd700;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.btnarea p a:hover {
+  color: #fff;
+}
+
+/* Media Queries */
+@media screen and (max-width: 768px) {
+  .formarea {
+    padding: 20px;
+  }
+}
+
+@media screen and (max-width: 576px) {
+  .formarea {
+    padding: 15px;
+  }
+  .formarea h1 {
+    font-size: 2rem;
+  }
+  .inputs,
+  .bttn {
+    padding: 12px 24px;
+    font-size: 0.9rem;
+  }
+}

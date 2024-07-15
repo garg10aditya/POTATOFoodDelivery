@@ -1,0 +1,64 @@
+/* src/components/Sidebar.css */
+
+.sidebar {
+  width: 230px;
+  background-color: #282c34;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  color: #fff;
+  font-family: 'Arial', sans-serif;
+  border-radius: 12px;
+  margin-top: 60px;
+}
+
+
+nav ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 100px;
+}
+
+nav ul ul {
+  padding-left: 20px;
+}
+
+nav ul li {
+  margin-bottom: 15px;
+}
+
+nav ul li a {
+  display: block;
+  padding: 12px 15px;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: background-color 0.3s, color 0.3s;
+  background-color: #3a3f47;
+}
+
+nav ul li a:hover {
+  background-color: #4c9aff;
+  color: #fff;
+}
+
+nav ul li a.active {
+  background-color: #4c9aff;
+  color: #fff;
+  font-weight: bold;
+}
+
+nav ul ul {
+  display: none;
+}
+
+nav ul li ul li a {
+  padding: 10px 15px;
+}
+
+nav ul li ul li a:hover {
+  background-color: #4a5058;
+}
+ 
