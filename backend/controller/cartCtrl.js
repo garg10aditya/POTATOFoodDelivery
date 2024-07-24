@@ -64,15 +64,26 @@ const addToCart = async (req, res) => {
 const getCartItems = async (req, res) => {
   try {
     const { userId } = req.query;
-    console.log(userId)
+    console.log(userId);
 
     const cart = await cartModel.findOne({ _id: userId });
+    console.log(cart);
 
-    // if (cart) {
-    //     return res.status(404).json({ error: 'Cart not found' });
-    // }
+    if (cart) {
+      // Calculate the total quantity of all items in the cart
+      const totalQuantity = cart.items.reduce((sum, item) => sum + item.quantity, 0);
 
-    res.json({ success: true, cart });
+      // Add totalQuantity to the cart object
+      const cartWithTotalQuantity = {
+        ...cart.toObject(),
+        totalQuantity
+      };
+      console.log(cartWithTotalQuantity)
+
+      res.json({ success: true, cart: cartWithTotalQuantity });
+    } else {
+      res.status(404).json({ error: 'Cart not found' });
+    }
   } catch (err) {
     console.error('Error retrieving cart items:', err);
     res.status(500).json({ error: 'Failed to retrieve cart items', details: err.message });
@@ -142,5 +153,16 @@ const updateItem = async (req, res) => {
   }
 };
 
+const clearCart=  async (req, res) => {
+  const { userId } = req.query;
+  try {
+    // Logic to clear the cart for the user
+    await Cart.updateOne({ userId }, { $set: { items: [] } });
+    res.status(200).send({ message: 'Cart cleared successfully' });
+  } catch (error) {
+    res.status(500).send({ error: 'Error clearing cart' });
+  }
+};
 
-module.exports = { addToCart, getCartItems, deleteItem ,updateItem};
+
+module.exports = { addToCart, getCartItems, deleteItem ,updateItem, clearCart};

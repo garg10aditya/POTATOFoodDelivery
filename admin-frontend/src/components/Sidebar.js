@@ -1,54 +1,53 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
-import './Sidebar.css';
+import './Sidebar.css'; // Add your CSS styles
 
 const Sidebar = () => {
-  const [dropdowns, setDropdowns] = useState({
-    restaurantList: false,
-    deliveryPeopleList: false,
-    orderDeliveriesList: false,
-    reviews: false,
-    earningsReports: false,
-    settings: false,
-    pages: false,
-  });
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const toggleDropdown = (dropdown) => {
-    setDropdowns((prevState) => ({
-      ...prevState,
-      [dropdown]: !prevState[dropdown],
-    }));
+  useEffect(() => {
+    const token = localStorage.getItem("ownerToken");
+    if (token) {
+      setIsLoggedIn(true);
+    } else {
+      setIsLoggedIn(false);
+    }
+  }, []);
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
   };
 
   return (
-    <div className="sidebar">
-      
-      <nav>
-        <ul>
-          <li>
-            <NavLink to="/dashboard" activeClassName="active">
-              Dashboard
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/dispatcher/pending-orders" activeClassName="active">
-              Order Deliveries List
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/restaurantslist" activeClassName="active">
-            Restaurant List
-            </NavLink>
-          </li>
-    
-          <li>
-            <NavLink to="/user" activeClassName="active">
-              User
-            </NavLink>
-          </li>
-
-        </ul>
-      </nav>
+    <div>
+      {isLoggedIn ? (
+        <div>
+          <button className="sidebar-toggle" onClick={toggleSidebar}>
+            ☰
+          </button>
+          <div className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
+            <nav>
+              <ul>
+                <li>
+                  <NavLink to="/dashboard" activeClassName="active-link">Dashboard</NavLink>
+                </li>
+                <li>
+                  <NavLink to="/all-orders" activeClassName="active-link">All Orders</NavLink>
+                </li>
+                <li>
+                  <NavLink to="/restaurantslist" activeClassName="active-link">Restaurants List</NavLink>
+                </li>
+                <li>
+                  <NavLink to="/user" activeClassName="active-link">User List</NavLink>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+      ) : (
+        <h2 className="start-business-heading">Start Your Business Today</h2>
+      )}
     </div>
   );
 };

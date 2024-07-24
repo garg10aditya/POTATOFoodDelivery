@@ -1,48 +1,74 @@
-// src/App.js
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import './App.css';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import Dashboard from './components/Dashboard';
-import Dispatcher from './components/Dispatcher';
-import PendingOrders from './components/PendingOrders';
-import ApprovedOrders from './components/ApprovedOrders';
-import ProcessingOrders from './components/ProcessingOrders';
-import OngoingOrders from './components/OngoingOrders';
-import CompletedOrders from './components/CompletedOrders';
-import CancelledOrders from './components/CancelledOrders';
+import Received from './components/Received';
+import AllOrders from './components/AllOrders';
 import RestaurantList from './components/RestaurantList';
 import UserList from './components/UserList';
+import Processing from './components/Processing';
+import Delivered from './components/Delivered';
+import Cancelled from './components/Cancelled';
+import Login from './components/Login';
+import Register from './components/Register';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('ownerToken');
+    setIsAuthenticated(!!token);
+  }, []);
+
+  const handleLogin = () => {
+    setIsAuthenticated(true);
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    localStorage.removeItem('ownerToken');
+  };
+
+  useEffect(() => {
+    const handlePopState = (event) => {
+      // Check if the user is navigating to the login page
+      if (window.location.pathname === '/login') {
+        localStorage.removeItem('ownerToken');
+        setIsAuthenticated(false);
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, []);
+
   return (
     <Router>
       <div className="App">
-        <Sidebar />
+        {isAuthenticated && <Sidebar />}
         <div className="main-content">
-          <Header />
+          {isAuthenticated && <Header onLogout={handleLogout} />}
           <div className="content">
             <Routes>
-          
-             <Route path="/dashboard" element={<Dashboard />}>
-                <Route path="pending-orders" element={<PendingOrders />} />
-                <Route path="processing-orders" element={<ProcessingOrders />} />
-                <Route path="completed-orders" element={<CompletedOrders />} />
-                <Route path="cancelled-orders" element={<CancelledOrders />} />
+              <Route path="/" element={<Register />} />
+              <Route path="/login" element={<Login onLogin={handleLogin} />} />
+              <Route element={<ProtectedRoute />}>
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/received" element={<Received />} />
+                <Route path="/processing" element={<Processing />} />
+                <Route path="/delivered" element={<Delivered />} />
+                <Route path="/cancelled" element={<Cancelled />} />
+                <Route path="/all-orders" element={<AllOrders />} />
+                <Route path="/restaurantslist" element={<RestaurantList />} />
+                <Route path="/user" element={<UserList />} />
               </Route>
-              <Route path="/dispatcher" element={<Dispatcher />}>
-                <Route path="pending-orders" element={<PendingOrders />} />
-                <Route path="approved-orders" element={<ApprovedOrders />} />
-                <Route path="processing-orders" element={<ProcessingOrders />} />
-                <Route path="ongoing-orders" element={<OngoingOrders />} />
-                <Route path="completed-orders" element={<CompletedOrders />} />
-                <Route path="cancelled-orders" element={<CancelledOrders />} />
-              </Route>
-              <Route path="/restaurantslist" element={<RestaurantList />} />
-              <Route path="/user" element={<UserList />} />
-             
-              {/* Define routes for other components here */}
+              <Route path="*" element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} />} />
             </Routes>
           </div>
         </div>

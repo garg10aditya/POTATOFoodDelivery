@@ -1,24 +1,155 @@
+/* RestaurantHome.css */
+
 .restaurant-dashboard {
-  margin-bottom: -1rem;
-  justify-content: center;
   display: flex;
-  height: fit-content;
+  height: 100vh;
+  overflow-x: hidden; /* Hide horizontal overflow */
+  padding-bottom: 0.2rem;
 }
 
 .sidebar {
-  width: 25rem;
-  background-color: #f5f3f5;
-  padding: 1rem;
+  width: 25rem; /* Initial width for larger screens */
+  padding: 0.5rem;
+  background-image: url("https://png.pngtree.com/background/20220715/original/pngtree-dark-green-dark-green-advertising-menu-cover-background-gold-content-box-picture-image_1625160.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  transition: width 0.5s ease-in-out; /* Smooth animation for width */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
 }
 
-.sidebar-tab {
-  margin-bottom: 1rem;
+.sidebar.open {
+  width: 25rem; /* Open sidebar width */
+}
+
+.sidebar:not(.open) {
+  width: 0; /* Collapse sidebar */
+}
+
+.toggle-btn {
+  top: 20px;
+  left: 20px;
+  z-index: 1; /* Ensure toggle button is above sidebar */
+  background-color: #333;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 5px;
 }
 
 .main-content {
   flex: 1;
   padding: 3rem;
   background-color: white;
-  margin-bottom: 2rem;
-  width: fit-content;
+  width: calc(100% - 25rem); /* Adjust width based on sidebar */
+  transition: width 0.3s ease-in-out; /* Smooth animation for width */
+  overflow-y: auto; /* Enable vertical scrolling if needed */
+  background-image: url("https://i.etsystatic.com/8583516/r/il/413579/605177524/il_fullxfull.605177524_ht7a.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  display: flex;
+}
+@media screen and (width>550px) {
+  .main-content {
+    justify-content: center;
+  }
+}
+
+/* Media Query for smaller screens */
+/* @media (max-width: 825px) {
+  .sidebar {
+    width: 0; Collapse sidebar
+  }
+
+  .sidebar.open {
+    width: 25rem; Override width for open state
+  }
+
+  .main-content {
+    width: 100%;Full width when sidebar is collapsed
+  }
+} */
+
+@media screen and (width<800px) {
+  .sidebar {
+    width: 0;
+  }
+  .sidebar.open {
+    width: 0;
+  }
+  .sidebar:not(.open) {
+    width: 25rem;
+  }
+  .main-content {
+    width: 100%;
+  }
+}
+
+.sidebar-tab:hover {
+  background-color: goldenrod !important;
+}
+
+.span {
+  display: flex;
+  justify-content: center;
+}
+
+.toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #242f40;
+}
+
+.filler {
+  margin: auto;
+}
+
+h3 {
+  margin: 0;
+  padding: 0;
+  color: transparent;
+  font-size: 11em;
+}
+h3 span {
+  display: table-cell;
+  animation: animate 1s linear infinite;
+}
+h3 span:nth-child(9n + 1) {
+  animation-delay: 0.5s;
+}
+h3 span:nth-child(9n + 2) {
+  animation-delay: 1.25s;
+}
+h3 span:nth-child(9n + 3) {
+  animation-delay: 2.35s;
+}
+h3 span:nth-child(9n + 4) {
+  animation-delay: 2.75s;
+}
+h3 span:nth-child(9n + 5) {
+  animation-delay: 1s;
+}
+h3 span:nth-child(9n + 6) {
+  animation-delay: 1.35s;
+}
+h3 span:nth-child(9n + 7) {
+  animation-delay: 1.5s;
+}
+h3 span:nth-child(9n + 8) {
+  animation-delay: 0.65s;
+}
+h3 span:nth-child(9n + 9) {
+  animation-delay: 3.85s;
+}
+@keyframes animate {
+  0%,
+  100% {
+    color: #fff;
+    filter: blur(0.3px);
+    text-shadow: 0 0 10px #00b3ff, 0 0 20px #00b3ff, 0 0 40px #00b3ff,
+      0 0 80px #00b3ff, 0 0 120px #00b3ff, 0 0 200px #00b3ff;
+  }
 }

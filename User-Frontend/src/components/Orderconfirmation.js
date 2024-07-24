@@ -29,22 +29,26 @@ const OrderConfirmation = () => {
     <>
       <Navbar />
       <div className="order-confirmation-container">
-        <h2>Order Confirmation</h2>
+        <h2>Order Details</h2>
         {order ? (
           <>
-            <h3>Order ID: {order._id}</h3>
             <h4>Status: {status}</h4>
             <ul>
               {order.items.map((item) => (
                 <li key={item._id}>
-                  <span>{item.name} x {item.quantity}</span><br/>
-                  <span>₹{item.individualPrice * item.quantity}</span><br/>
+                  <span>
+                    {item.name} x {item.quantity}
+                  </span>
+                  <br />
+                  <span>₹{item.individualPrice * item.quantity}</span>
+                  <br />
                   <span>Restaurant: {item.itemRestro}</span>
                 </li>
               ))}
             </ul>
             <div className="order-totals">
-              <p>Total: ₹{order.totalPrice}</p>
+              <div className='totalp'>Total: ₹{order.totalPrice}</div>
+              <div className='orderid'>Order ID: {order._id}</div>
             </div>
           </>
         ) : (

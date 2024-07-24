@@ -1,70 +1,176 @@
-// src/components/Dashboard.js
-
 import React, { useState, useEffect } from 'react';
 import { Line, Pie } from 'react-chartjs-2';
 import { useNavigate } from 'react-router-dom';
-import {
-  Chart as ChartJS,
+import axios from 'axios';
+import { Chart as ChartJS, ArcElement, PointElement, LineElement, Tooltip, Legend, CategoryScale, LinearScale } from 'chart.js';
+import './Dashboard.css';
+
+ChartJS.register(
   ArcElement,
   PointElement,
   LineElement,
   Tooltip,
   Legend,
   CategoryScale,
-  LinearScale,
-} from 'chart.js';
-import './Dashboard.css';
-import UserList from './UserList';
-import RestaurantList from './RestaurantList';
-
-// Registering required elements and scales
-ChartJS.register(ArcElement, PointElement, LineElement, Tooltip, Legend, CategoryScale, LinearScale);
+  LinearScale
+);
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [userCount, setUserCount] = useState(0);
   const [restaurantCount, setRestaurantCount] = useState(0);
-
-  useEffect(() => {
-    // No need for an effect here unless you're fetching counts from APIs
-    // You can manage counts directly in UserList and RestaurantList components
-  }, []);
+  const [receivedCount, setReceivedCount] = useState(0);
+  const [processingCount, setProcessingCount] = useState(0);
+  const [deliveredCount, setDeliveredCount] = useState(0);
+  const [cancelledCount, setCancelledCount] = useState(0);
+  const [earning, setEarning] = useState(0);
+  const [monthlyData, setMonthlyData] = useState({
+    delivered: [],
+    cancelled: []
+  });
+  const [pieData, setPieData] = useState({
+    labels: ['Received', 'Processing', 'Cancelled', 'Delivered'],
+    datasets: [
+      {
+        data: [0, 0, 0, 0],
+        backgroundColor: ['#3498db', '#f1c40f', '#e74c3c', '#2ecc71'],
+        hoverBackgroundColor: ['#2980b9', '#f39c12', '#c0392b', '#27ae60'],
+      },
+    ],
+  });
 
   const handleNavigation = (path) => {
     navigate(path);
   };
 
-  const lineData = {
+  useEffect(() => {
+    const fetchUserCount = async () => {
+      try {
+        const response = await axios.get('http://localhost:3001/Admins/users');
+        setUserCount(response.data.length);
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+
+    fetchUserCount();
+    const intervalUser = setInterval(fetchUserCount, 300);
+
+    return () => clearInterval(intervalUser);
+  }, []);
+
+  useEffect(() => {
+    const fetchRestaurantCount = async () => {
+      try {
+        const response = await axios.get('http://localhost:3001/Admins/restaurantslist');
+        setRestaurantCount(response.data.length);
+      } catch (error) {
+        console.error('Error fetching restaurant data:', error);
+      }
+    };
+
+    fetchRestaurantCount();
+    const intervalRestaurant = setInterval(fetchRestaurantCount, 300);
+
+    return () => clearInterval(intervalRestaurant);
+  }, []);
+
+  useEffect(() => {
+    const fetchOrderCountsAndEarnings = async () => {
+      try {
+        const response = await axios.get('http://localhost:3001/Admins/all');
+        const orders = response.data;
+        
+        const receivedOrders = orders.filter(order => ['Order Created', 'Order Accepted'].includes(order.status));
+        const processingOrders = orders.filter(order => ['Order is Being Prepared', 'Order Has Been Prepared', 'Order on Your Way'].includes(order.status));
+        const deliveredOrders = orders.filter(order => order.status === 'Order Delivered');
+        const cancelledOrders = orders.filter(order => order.status === 'Order Cancelled');
+
+        setReceivedCount(receivedOrders.length);
+        setProcessingCount(processingOrders.length);
+        setDeliveredCount(deliveredOrders.length);
+        setCancelledCount(cancelledOrders.length);
+
+        const deliveredData = Array(12).fill(0);
+        const cancelledData = Array(12).fill(0);
+
+        orders.forEach(order => {
+          const status = order.status;
+          const createdAt = new Date(order.createdAt);
+          const month = createdAt.getMonth();
+
+          if (status === 'Order Delivered') {
+            deliveredData[month]++;
+          } else if (status === 'Order Cancelled') {
+            cancelledData[month]++;
+          }
+        },[]);
+
+        const monthlyDelivered = deliveredData.map((count, index) => ({
+          month: index + 1,
+          value: count
+        }));
+
+        const monthlyCancelled = cancelledData.map((count, index) => ({
+          month: index + 1,
+          value: count
+        }));
+
+        setMonthlyData({
+          delivered: monthlyDelivered,
+          cancelled: monthlyCancelled
+        });
+
+        setPieData({
+          labels: ['Received', 'Processing', 'Cancelled', 'Delivered'],
+          datasets: [
+            {
+              data: [receivedOrders.length, processingOrders.length, cancelledOrders.length, deliveredOrders.length],
+              backgroundColor: ['#3498db', '#f1c40f', '#e74c3c', '#2ecc71'],
+              hoverBackgroundColor: ['#2980b9', '#f39c12', '#c0392b', '#27ae60'],
+            },
+          ],
+        });
+
+        // Calculate total earnings
+        const totalRevenue = orders.reduce((sum, order) => sum + parseFloat(order.totalPrice || 0), 0);
+        const revenueAfterGST = totalRevenue * 0.82;
+        const platformRevenue = revenueAfterGST * 0.10;
+        setEarning(platformRevenue.toFixed(2));
+
+        console.log('Total Revenue:', totalRevenue);
+        console.log('Revenue After GST:', revenueAfterGST);
+        console.log('Platform Revenue:', platformRevenue);
+
+      } catch (error) {
+        console.error('Error fetching order data:', error);
+      }
+    };
+
+    fetchOrderCountsAndEarnings();
+    const intervalOrders = setInterval(fetchOrderCountsAndEarnings, 300);
+
+    return () => clearInterval(intervalOrders);
+  }, []);
+
+  const barData = {
     labels: [
       'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December',
     ],
     datasets: [
       {
         label: 'Products Delivered',
-        data: [30, 25, 40, 45, 50, 60, 55, 70, 65, 80, 75, 90],
         backgroundColor: 'rgba(75, 192, 192, 0.2)',
         borderColor: 'rgba(75, 192, 192, 1)',
         borderWidth: 1,
-        fill: true,
+        data: monthlyData.delivered.map(data => data.value),
       },
       {
         label: 'Products Cancelled',
-        data: [5, 10, 7, 8, 6, 10, 9, 6, 8, 5, 7, 6],
         backgroundColor: 'rgba(192, 192, 192, 0.2)',
         borderColor: 'rgba(192, 192, 192, 1)',
         borderWidth: 1,
-        fill: true,
-      },
-    ],
-  };
-
-  const pieData = {
-    labels: ['Received', 'Processing', 'Restaurant', 'Delivery People'],
-    datasets: [
-      {
-        data: [156, 2, 7, 3],
-        backgroundColor: ['#3498db', '#f1c40f', '#e74c3c', '#2ecc71'],
-        hoverBackgroundColor: ['#2980b9', '#f39c12', '#c0392b', '#27ae60'],
+        data: monthlyData.cancelled.map(data => data.value),
       },
     ],
   };
@@ -77,41 +183,41 @@ const Dashboard = () => {
             <i className="fas fa-shopping-cart"></i> Order Statistics
           </h3>
           <div className="stats">
-            <button className="stat-box blue" onClick={() => handleNavigation('/dispatcher/pending-orders')}>
+            <button className="stat-box blue" onClick={() => handleNavigation('/received')}>
               <p>Received</p>
-              <span>156</span>
+              <span>{receivedCount}</span>
             </button>
-            <button className="stat-box yellow" onClick={() => handleNavigation('/dispatcher/processing-orders')}>
+            <button className="stat-box yellow" onClick={() => handleNavigation('/processing')}>
               <p>Processing</p>
-              <span>2</span>
+              <span>{processingCount}</span>
             </button>
-            <button className="stat-box green" onClick={() => handleNavigation('/dispatcher/completed-orders')}>
+            <button className="stat-box green" onClick={() => handleNavigation('/delivered')}>
               <p>Delivered</p>
-              <span>22</span>
+              <span>{deliveredCount}</span>
             </button>
-            <button className="stat-box red" onClick={() => handleNavigation('/dispatcher/cancelled-orders')}>
+            <button className="stat-box red" onClick={() => handleNavigation('/cancelled')}>
               <p>Cancelled</p>
-              <span>18</span>
+              <span>{cancelledCount}</span>
             </button>
           </div>
         </div>
 
         <div className="site-stats box">
-          <h3>  
+          <h3>
             <i className="fas fa-chart-line"></i> Site Statistics
           </h3>
           <div className="stats">
-            <button className="stat-box blue" onClick={() => handleNavigation('/restaurantslist')}>
+          <button className="stat-box blue" onClick={() => handleNavigation('/restaurantslist')}>
               <p>Restaurant</p>
               <span>{restaurantCount}</span>
             </button>
-            <button className="stat-box green" onClick={() => handleNavigation('/user ')}>
+            <button className="stat-box green" onClick={() => handleNavigation('/user')}>
               <p>Users</p>
               <span>{userCount}</span>
             </button>
             <button className="stat-box red" onClick={() => handleNavigation('/dashboard')}>
               <p>Earnings</p>
-              <span>150 Rupya</span>
+              <span>Rs {earning}</span>
             </button>
           </div>
         </div>
@@ -122,7 +228,7 @@ const Dashboard = () => {
           <h3>
             <i className="fas fa-chart-area"></i> Product Sales
           </h3>
-          <Line data={lineData} />
+          <Line data={barData} />
         </div>
         <div className="orders-pie box">
           <h3>
@@ -133,34 +239,6 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
-
-      <div className="latest-orders box">
-        <h3>
-          <i className="fas fa-cart-plus"></i> Latest Orders
-        </h3>
-        {[1, 2, 3].map((order, index) => (
-          <div className="order" key={index}>
-            <img src="https://via.placeholder.com/50" alt="Dish" />
-            <div className="order-details">
-              <p>
-                <strong>Restaurant Name {index + 1}</strong>
-              </p>
-              <p>Dish Name</p>
-              <p>Status: Delivered</p>
-              <p>Order No: #{1234 + index}</p>
-              <p>
-                <i className="fas fa-clock"></i> {30 + index * 15} mins ago
-              </p>
-              <p>Restaurant Location</p>
-              <p>Delivery Location</p>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Include UserList and RestaurantList components with count props */}
-      <UserList setUserCount={setUserCount} />
-      <RestaurantList setRestaurantCount={setRestaurantCount} />
     </div>
   );
 };

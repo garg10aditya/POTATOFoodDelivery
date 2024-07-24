@@ -26,7 +26,6 @@ const Cart = () => {
       });
       console.log('Cart items:', response.data.cart.items);
       setCartItems(response.data.cart.items);
-
       calculateTotals(response.data.cart.items);
     } catch (error) {
       console.error('Error fetching cart items:', error);
@@ -102,9 +101,27 @@ const Cart = () => {
     } finally {
       setShowOverlay(false); // Hide overlay after navigation
     }
+  
   };
+
+  const handleClearCart = async () => {
+    try {
+      await axios.delete('http://localhost:3001/cart/clear', {
+        params: { userId },
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      // Clear the cart items and reset totals
+      setCartItems([]);
+      setSubtotal(0);
+      setTax(0);
+      setTotal(0);
+    } catch (error) {
+      console.error('Error clearing cart:', error);
+    }
+  };
+
   
-  
+
   return (
     <>
       <Navbar />
@@ -126,10 +143,20 @@ const Cart = () => {
           <p>Subtotal: ₹{subtotal}</p>
           <p>Tax: ₹{tax}</p>
           <p>Total: ₹{total}</p>
-        </div>
-        <button onClick={handleCheckout} disabled={cartItems.length === 0} className='checkout-button'>
-          Proceed to Checkout
-        </button>
+        </div><button
+  onClick={() => {
+    handleCheckout();
+    handleClearCart();
+  }}
+  disabled={cartItems.length === 0}
+  className='checkout-button'
+>
+  Proceed to Checkout
+</button>
+
+        {/* <button onClick={handleClearCart} disabled={cartItems.length === 0} className='clear-cart-button'>
+          Clear Cart
+        </button> */}
       </div>
     </>
   );
